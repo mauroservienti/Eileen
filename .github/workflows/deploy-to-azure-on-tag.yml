@@ -6,7 +6,8 @@ name: Build and deploy ASP.Net Core app to Azure Web App - eileen
 on:
   push:
     tags: ["*.*.*"]
-
+env:
+  DOTNET_NOLOGO: true
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
