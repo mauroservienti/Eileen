@@ -5,8 +5,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - eileen
 
 on:
   push:
-    branches:
-      - initial-structure
+    tags: ["*.*.*"]
 
 jobs:
   build-and-deploy:
@@ -21,10 +20,10 @@ jobs:
         dotnet-version: '5.0.x'
 
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: ./build.sh
 
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish /src/Eileen/Eileen.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
