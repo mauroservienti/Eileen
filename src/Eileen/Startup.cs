@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Eileen.Data;
+using Eileen.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -43,6 +44,9 @@ namespace Eileen
                     var googleAuthNSection = Configuration.GetSection("Authentication:Google");
                     options.ClientId = googleAuthNSection["ClientId"];
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
+
+                    var authSection = Configuration.GetSection("Authentication");
+                    options.Events = new GoogleAuthEvents(authSection["AllowedIdentifiers"].Split(';'));
                 });
 
             services.AddControllersWithViews();
