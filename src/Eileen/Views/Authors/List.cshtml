@@ -1,0 +1,24 @@
+﻿@using Eileen.Data
+@using Eileen.Data.Views
+@model PagedResults<AuthorsWithBooksCount>
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<h2>Autori</h2>
+
+<ul>
+    <li>
+        <a asp-controller="Authors" asp-action="New">Aggiungi un nuovo autore</a>
+    </li>
+</ul>
+
+<ul>
+    @foreach (var author in Model.Results)
+    {
+        <li>
+            <a asp-controller="Authors" asp-action="View" asp-route-id="@author.Id">@author.Name (@author.BooksCount)</a>
+        </li>
+    }
+</ul>

@@ -1,0 +1,15 @@
+﻿@model Eileen.Data.Author
+
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<h2>@Model.Name</h2>
+
+<h3>Opere</h3>
+<ul>
+@foreach (var book in Model.Books)
+{
+    <li>@book.Title</li>
+}
+</ul>
