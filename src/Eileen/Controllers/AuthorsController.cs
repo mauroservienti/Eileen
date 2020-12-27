@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using Eileen.Data;
 using Eileen.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eileen.Controllers
 {
-    [Route("Authors")]
+    [Authorize, Route("Authors")]
     public class AuthorsController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
