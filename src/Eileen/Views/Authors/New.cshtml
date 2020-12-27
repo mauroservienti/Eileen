@@ -1,0 +1,12 @@
+﻿@model NewAuthorViewModel
+
+@{
+    ViewBag.Title = "Nuovo autore";
+}
+
+<h2>Nuovo autore</h2>
+@using(@Html.BeginForm(FormMethod.Post))
+{
+@Html.TextAreaFor(m=>m.Name);
+<input type="submit" value="Salva"/>
+}
