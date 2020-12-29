@@ -23,6 +23,14 @@ namespace Eileen.Migrations
                 principalTable: "Authors",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            var sql = @"CREATE OR ALTER VIEW [dbo].[vwAuthorsWithBooksCount] AS
+                        SELECT dbo.Authors.Id, dbo.Authors.Name, COUNT(dbo.Books.Id) AS BooksCount
+                        FROM dbo.Authors LEFT OUTER JOIN
+                         dbo.Books ON dbo.Authors.Id = dbo.Books.AuthorId
+						 Group By dbo.Authors.Id, dbo.Authors.Name";
+
+            migrationBuilder.Sql(sql);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -39,6 +47,14 @@ namespace Eileen.Migrations
                 name: "AuthorId",
                 table: "Books",
                 newName: "Author");
+
+            var sql = @"CREATE OR ALTER VIEW [dbo].[vwAuthorsWithBooksCount] AS
+                        SELECT dbo.Authors.Id, dbo.Authors.Name, COUNT(dbo.Books.Id) AS BooksCount
+                        FROM dbo.Authors LEFT OUTER JOIN
+                         dbo.Books ON dbo.Authors.Id = dbo.Books.Author
+						 Group By dbo.Authors.Id, dbo.Authors.Name";
+
+            migrationBuilder.Sql(sql);
         }
     }
 }
