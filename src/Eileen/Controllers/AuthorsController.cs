@@ -56,7 +56,7 @@ namespace Eileen.Controllers
             return View(new NewAuthorViewModel());
         }
 
-        [HttpPost("New")]
+        [HttpPost("New"), ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewAuthorViewModel model)
         {
             if (model == null)
