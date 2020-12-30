@@ -98,7 +98,7 @@ namespace Eileen.Tests
         }
         
         [Fact]
-        public async Task With_pre_filled_database_paging_works_as_expected()
+        public async Task With_pre_filled_database_first_page_contains_expected_results()
         {
             var expectedAuthors = new[]
             {
@@ -133,6 +133,47 @@ namespace Eileen.Tests
             Assert.Equal
             (
                 expectedAuthors.OrderBy(a=> a).Take(5),
+                pagedResults.Results.Select(a=>a.Name)
+            );
+        }
+        
+        [Fact]
+        public async Task With_pre_filled_database_second_page_contains_expected_results()
+        {
+            var expectedAuthors = new[]
+            {
+                "Stephen King", 
+                "Michael Connelly",
+                "John le Carré",
+                "William Shakespeare",
+                "Dante Alighieri",
+                "Cicerone",
+                "Frederick. Forsyth"
+            };
+            
+            //Arrange
+            foreach (var expectedAuthor in expectedAuthors)
+            {
+                await CurrentDbContext.Authors.AddAsync(new Author
+                {
+                    Name = expectedAuthor
+                });
+            }
+            await CurrentDbContext.SaveChangesAsync();
+            
+            //Act
+            var controller = new AuthorsController(CurrentDbContext);
+            var viewResult = await controller.List(page: 2, pageSize: 5) as ViewResult;
+            var pagedResults = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
+            
+            //Assert
+            Assert.NotNull(pagedResults);
+            Assert.Equal(2, pagedResults.PagesCount);
+            Assert.Equal(2, pagedResults.Page);
+            Assert.Equal(expectedAuthors.Length, pagedResults.TotalItemsCount);
+            Assert.Equal
+            (
+                expectedAuthors.OrderBy(a=> a).Skip(5).Take(5),
                 pagedResults.Results.Select(a=>a.Name)
             );
         }
