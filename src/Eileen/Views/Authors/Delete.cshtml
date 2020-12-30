@@ -1,0 +1,13 @@
+﻿@model DeleteAuthorViewModel
+
+@{
+    ViewBag.Title = $"Cancella {@Model.Name}";
+}
+
+<h2>Sei sicuro di voler cancellare @Model.Name</h2>
+@using(@Html.BeginForm(FormMethod.Post))
+{
+    @Html.LabelFor(m=>m.DeleteBooks, "Vuoi cancellare anche i libri?") @Html.CheckBoxFor(m=>m.DeleteBooks);
+    <br />
+    <input type="submit" value="Cancella"/>
+}
