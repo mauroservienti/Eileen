@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Eileen.Controllers;
 using Eileen.Data;
-using Eileen.Data.Views;
 using Eileen.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
