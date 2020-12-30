@@ -23,5 +23,5 @@ jobs:
       with:
         dotnet-version: '5.0.x'
     - run: dotnet --info
-    - name: build
+    - name: Build solution and run all tests
       run: ./build.sh
