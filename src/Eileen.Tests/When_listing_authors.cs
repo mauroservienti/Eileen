@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Eileen.Controllers;
 using Eileen.Data;
 using Eileen.Data.Views;
@@ -17,15 +18,83 @@ namespace Eileen.Tests
         }
         
         [Fact]
-        public async Task With_default_paging_and_database_is_empty_list_is_empty()
+        public async Task With_empty_database_and_default_paging_list_is_empty()
         {
             var controller = new AuthorsController(CurrentDbContext);
             var viewResult = await controller.List() as ViewResult;
-            var pagedResult = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
+            var pagedResults = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
             
             Assert.NotNull(viewResult);
-            Assert.NotNull(pagedResult);
-            Assert.Empty(pagedResult.Results);
+            Assert.NotNull(pagedResults);
+            Assert.Equal(0, pagedResults.PageCount);
+            Assert.Equal(0, pagedResults.RowCount);
+            Assert.Empty(pagedResults.Results);
+        }
+        
+        [Fact]
+        public async Task With_empty_database_and_invalid_paging_list_is_empty()
+        {
+            var controller = new AuthorsController(CurrentDbContext);
+            var viewResult = await controller.List(page: -1, pageSize: -5) as ViewResult;
+            var pagedResults = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
+            
+            Assert.NotNull(viewResult);
+            Assert.NotNull(pagedResults);
+            Assert.Equal(1, pagedResults.CurrentPage);
+            Assert.Equal(25, pagedResults.PageSize);
+            Assert.Equal(0, pagedResults.PageCount);
+            Assert.Equal(0, pagedResults.RowCount);;
+            Assert.Empty(pagedResults.Results);
+        }
+        
+        [Fact]
+        public async Task With_pre_filled_database_list_contains_expected_data()
+        {
+            var expectedAuthors = new[] {"Stephen King", "Michael Connelly", "John le Carré"};
+            
+            //Arrange
+            foreach (var expectedAuthor in expectedAuthors)
+            {
+                await CurrentDbContext.Authors.AddAsync(new Author
+                {
+                    Name = expectedAuthor
+                });
+            }
+            await CurrentDbContext.SaveChangesAsync();
+            
+            //Act
+            var controller = new AuthorsController(CurrentDbContext);
+            var viewResult = await controller.List() as ViewResult;
+            var pagedResults = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
+            
+            //Assert
+            Assert.NotNull(pagedResults);
+            Assert.Contains(pagedResults.Results, result => expectedAuthors.Contains(result.Name));
+        }
+        
+        [Fact]
+        public async Task With_pre_filled_database_list_is_sorted_alphabetically()
+        {
+            var expectedAuthors = new[] {"Stephen King", "Michael Connelly", "John le Carré"};
+            
+            //Arrange
+            foreach (var expectedAuthor in expectedAuthors)
+            {
+                await CurrentDbContext.Authors.AddAsync(new Author
+                {
+                    Name = expectedAuthor
+                });
+            }
+            await CurrentDbContext.SaveChangesAsync();
+            
+            //Act
+            var controller = new AuthorsController(CurrentDbContext);
+            var viewResult = await controller.List() as ViewResult;
+            var pagedResults = viewResult?.Model as PagedResults<AuthorsWithBooksCount>;
+            
+            //Assert
+            Assert.NotNull(pagedResults);
+            Assert.Equal(expectedAuthors.OrderBy(a=> a), pagedResults.Results.Select(a=>a.Name));
         }
     }
 }
