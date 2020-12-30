@@ -1,0 +1,13 @@
+﻿@model NewAuthorBookViewModel
+
+@{
+    ViewBag.Title = $"Aggiungi un nuovo libro a {Model.AuthorName}";
+}
+
+<h2>Aggiungi un nuovo libro a @Model.AuthorName</h2>
+
+@using(@Html.BeginForm(FormMethod.Post))
+{
+    @Html.LabelFor(m=>m.BookTitle, "Titolo:") @Html.TextAreaFor(m=>m.BookTitle);
+    <input type="submit" value="Salva"/>
+}

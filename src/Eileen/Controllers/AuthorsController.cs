@@ -115,5 +115,51 @@ namespace Eileen.Controllers
 
             return RedirectToAction("View", new {id = author.Id});
         }
+
+        [HttpGet("{id}/books/new")]
+        public async Task<IActionResult> NewAuthorBook(int id)
+        {
+            var author = await _dbContext.Authors
+                .Select(a=> new
+                {
+                    a.Id,
+                    a.Name
+                })
+                .SingleOrDefaultAsync(a => a.Id == id);
+
+            return View(new NewAuthorBookViewModel{ AuthorName = author.Name });
+        }
+
+        [HttpPost("{id}/books/new"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> NewAuthorBook(int id, NewAuthorBookRequest model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
+
+            var author = await _dbContext.Authors
+                .Include(a => a.Books)
+                .SingleOrDefaultAsync(a => a.Id == id);
+
+            if (author == null)
+            {
+                throw new ArgumentNullException("id", $"Author {id} not found");
+            }
+
+            author.Books.Add(new ()
+            {
+                Title = model.BookTitle
+            });
+
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("View", new {id = author.Id});
+        }
     }
 }
