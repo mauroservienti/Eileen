@@ -5,10 +5,10 @@ namespace Eileen.Data
 {
     public abstract class PagedResults
     {
-        public int CurrentPage { get; protected set; } 
-        public int PageCount { get; protected set; } 
+        public int Page { get; protected set; } 
+        public int PagesCount { get; protected set; } 
         public int PageSize { get; protected set; } 
-        public int RowCount { get; protected set; }
+        public int TotalItemsCount { get; protected set; }
  
         // public int FirstRowOnPage
         // {
@@ -25,13 +25,13 @@ namespace Eileen.Data
     {
         public IEnumerable<T> Results { get; }
  
-        public PagedResults( IEnumerable<T> results, int currentPage, int pageCount, int pageSize, int rowCount)
+        public PagedResults(IEnumerable<T> results, int page, int pageSize, int pagesCount, int totalItemsCount)
         {
             Results = results;
-            CurrentPage = currentPage;
-            PageCount = pageCount;
+            Page = page;
             PageSize = pageSize;
-            RowCount = rowCount;
+            PagesCount = pagesCount;
+            TotalItemsCount = totalItemsCount;
         }
     }
 }
