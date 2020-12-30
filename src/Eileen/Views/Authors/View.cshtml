@@ -8,6 +8,9 @@
     <li>
         <a asp-controller="Authors" asp-action="Delete" asp-route-id="@Model.Id">Cancella questo autore</a>
     </li>
+    <li>
+        <a asp-controller="Authors" asp-action="NewAuthorBook" asp-route-id="@Model.Id">Aggiungi un libro a questo autore</a>
+    </li>
 </ul>
 
 <h2>@Model.Name</h2>
