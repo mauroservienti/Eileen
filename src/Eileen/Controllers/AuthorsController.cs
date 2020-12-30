@@ -50,6 +50,43 @@ namespace Eileen.Controllers
             return View(author);
         }
 
+        [HttpGet("{id}/delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var authorProjection = await _dbContext.Authors
+                .Select(a=>new
+                {
+                    a.Id,
+                    a.Name
+                })
+                .SingleOrDefaultAsync(a => a.Id == id);
+
+            //TODO handle author not found
+
+            return View(new DeleteAuthorViewModel
+            {
+                Name = authorProjection.Name
+            });
+        }
+
+        [HttpPost("{id}/delete")]
+        public async Task<IActionResult> Delete(int id, DeleteAuthorRequest model)
+        {
+            var author = await _dbContext.Authors
+                .Include(a => a.Books)
+                .SingleOrDefaultAsync(a => a.Id == id);
+
+            _dbContext.Authors.Remove(author);
+            if (model.DeleteBooks)
+            {
+                _dbContext.Books.RemoveRange(author.Books);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("List");
+        }
+
         [HttpGet("New")]
         public IActionResult New()
         {
