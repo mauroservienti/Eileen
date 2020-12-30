@@ -45,5 +45,23 @@ namespace Eileen.Tests
                 await controller.New(null);
             });
         }
+
+        [Fact]
+        public async Task With_null_name_should_report_validation_error()
+        {
+            var newAuthorModel = new NewAuthorViewModel
+            {
+                Name = null
+            };
+
+            var controller = new AuthorsController(CurrentDbContext);
+            controller.ModelState.AddModelError("Name", "Name is required");
+
+            var actionResult = await controller.New(newAuthorModel);
+
+            var viewResult = Assert.IsType<BadRequestObjectResult>(actionResult);
+            var responseModel = Assert.IsType<NewAuthorViewModel>(viewResult.Value);
+            Assert.Equal(newAuthorModel, responseModel);
+        }
     }
 }

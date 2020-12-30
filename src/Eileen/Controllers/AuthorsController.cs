@@ -64,6 +64,11 @@ namespace Eileen.Controllers
                 throw new ArgumentNullException(nameof(model));
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
+
             var author = new Author()
             {
                 Name = model.Name
