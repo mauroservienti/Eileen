@@ -24,7 +24,7 @@ namespace Eileen.Tests
             ServiceProvider?.Dispose();
         }
 
-        protected AbstractDatabaseTest(ITestOutputHelper outputHelper, bool runMigrations = true)
+        protected AbstractDatabaseTest(ITestOutputHelper outputHelper)
         {
             OutputHelper = outputHelper;
             DatabaseName = $"tests_db_{Guid.NewGuid()}";
@@ -36,11 +36,9 @@ namespace Eileen.Tests
             serviceCollection.AddEntityFrameworkSqlServer();
             serviceCollection.AddDbContext<ApplicationDbContext>((provider, dbContextOptionsBuilder) =>
             {
-                var connectionStringToUse = Environment.GetEnvironmentVariable("EILEEN_TESTS_CONNECTION_STRING") 
-                                            ?? DefaultConnectionString;
+                var connectionStringToUse = Environment.GetEnvironmentVariable("EILEEN_TESTS_CONNECTION_STRING") ?? DefaultConnectionString;
 
-                var connectionStringBuilder =
-                    new SqlConnectionStringBuilder(connectionStringToUse) {InitialCatalog = DatabaseName};
+                var connectionStringBuilder = new SqlConnectionStringBuilder(connectionStringToUse) {InitialCatalog = DatabaseName};
 
                 var connectionString = connectionStringBuilder.ToString();
                 OutputHelper.WriteLine($"Current test connection string: {connectionString}");
@@ -51,11 +49,6 @@ namespace Eileen.Tests
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
             CurrentDbContext = ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            if (runMigrations)
-            {
-                CurrentDbContext.Database.Migrate();
-            }
         }
     }
 }
