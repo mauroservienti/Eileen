@@ -10,11 +10,9 @@ namespace Eileen.Tests
 {
     public class When_using_migrations : AbstractDatabaseTest
     {
-        public When_using_migrations(ITestOutputHelper outputHelper)
-            : base(outputHelper, runMigrations: false)
-        {
-            
-        }
+        public  When_using_migrations(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        { }
 
         [Fact]
         public async Task Run_up_and_down_succeed()
