@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Eileen.Data;
 using Eileen.Models;
@@ -58,6 +59,11 @@ namespace Eileen.Controllers
         [HttpPost("New")]
         public async Task<IActionResult> New(NewAuthorViewModel model)
         {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             var author = new Author()
             {
                 Name = model.Name

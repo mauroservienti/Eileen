@@ -35,5 +35,15 @@ namespace Eileen.Tests
             Assert.NotNull(author);
             Assert.Equal(newAuthorModel.Name, author.Name);
         }
+
+        [Fact]
+        public Task Using_null_arguments_should_throw()
+        {
+            return Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var controller = new AuthorsController(CurrentDbContext);
+                await controller.New(null);
+            });
+        }
     }
 }
