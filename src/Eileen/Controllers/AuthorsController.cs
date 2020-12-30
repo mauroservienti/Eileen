@@ -161,5 +161,46 @@ namespace Eileen.Controllers
 
             return RedirectToAction("View", new {id = author.Id});
         }
+        
+        [HttpGet("{id}/books/{bookId}/delete")]
+        public async Task<IActionResult> DeleteAuthorBookConfirmation(int id, int bookId)
+        {
+            var author = await _dbContext.Authors
+                .Select(a=> new
+                {
+                    a.Id,
+                    a.Name
+                })
+                .SingleOrDefaultAsync(a => a.Id == id);
+            
+            if (author == null)
+            {
+                throw new ArgumentNullException(nameof(id), $"Author {id} not found");
+            }
+            
+            var book = await _dbContext.Books
+                .Select(b=> new
+                {
+                    b.Id,
+                    b.Title
+                })
+                .SingleOrDefaultAsync(b => b.Id == id);
+            
+            if (book == null)
+            {
+                throw new ArgumentNullException(nameof(bookId), $"Book {bookId} not found");
+            }
+
+            return View(new DeleteAuthorBookViewModel{ AuthorName = author.Name,  BookTitle = book.Title });
+        }
+
+        [HttpPost("{id}/books/{bookId}/delete"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAuthorBook(int id, int bookId)
+        {
+            _dbContext.Books.Remove(new Book() {Id = bookId});
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("View", new {id = id});
+        }
     }
 }

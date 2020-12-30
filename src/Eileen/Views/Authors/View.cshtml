@@ -19,6 +19,6 @@
 <ul>
 @foreach (var book in Model.Books)
 {
-    <li>@book.Title</li>
+    <li>@book.Title (<a asp-controller="Authors" asp-action="DeleteAuthorBookConfirmation" asp-route-id="@Model.Id" asp-route-bookId="@book.Id">Cancella</a>)</li>
 }
 </ul>
