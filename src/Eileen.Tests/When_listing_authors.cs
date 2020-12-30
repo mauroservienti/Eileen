@@ -3,6 +3,7 @@ using Eileen.Controllers;
 using Eileen.Data;
 using Eileen.Data.Views;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,6 +13,7 @@ namespace Eileen.Tests
     {
         public When_listing_authors(ITestOutputHelper outputHelper) : base(outputHelper)
         {
+            CurrentDbContext.Database.Migrate();
         }
         
         [Fact]
