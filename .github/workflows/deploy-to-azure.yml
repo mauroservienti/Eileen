@@ -42,7 +42,7 @@ jobs:
     - name: Apply db migrations
       run: |
         dotnet tool install --global dotnet-ef
-        dotnet ef database update --project ./src/Eileen/Eileen.csproj --configuration Release --connection ${{ secrets.MIGRATIONS_CONNECTION_STRING }}
+        dotnet ef database update --project ./src/Eileen/Eileen.csproj --configuration Release --connection '${{ secrets.MIGRATIONS_CONNECTION_STRING }}'
 
     - name: dotnet publish
       run: dotnet publish ./src/Eileen/Eileen.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
