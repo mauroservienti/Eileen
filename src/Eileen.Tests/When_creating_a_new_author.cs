@@ -35,6 +35,27 @@ namespace Eileen.Tests
             Assert.NotNull(author);
             Assert.Equal(newAuthorModel.Name, author.Name);
         }
+        
+        [Fact]
+        public async Task CreatedOn_and_LastModifiedOn_are_set_correctly()
+        {
+            var expectedNow = DateTimeOffset.Now.AddDays(-1);
+            CurrentDbContext.NowGetter = () => expectedNow;
+            
+            var newAuthor = new Author
+            {
+                Name = "Author name"
+            };
+
+            await CurrentDbContext.Authors.AddAsync(newAuthor);
+            await CurrentDbContext.SaveChangesAsync();
+            CurrentDbContext.ChangeTracker.Clear();
+            
+            var author = await CurrentDbContext.Authors.FindAsync(newAuthor.Id);
+
+            Assert.Equal(expectedNow, author.CreatedOn);
+            Assert.Equal(expectedNow, author.LastModifiedOn);
+        }
 
         [Fact]
         public Task Using_null_arguments_should_throw()

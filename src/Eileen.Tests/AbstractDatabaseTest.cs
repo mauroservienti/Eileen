@@ -10,6 +10,7 @@ namespace Eileen.Tests
 {
     public abstract class AbstractDatabaseTest : IDisposable
     {
+        private bool _keepTestDatabase;
         const string DefaultConnectionString = "Data Source=(localdb)\\Eileen;Integrated Security=True";
         protected string DatabaseName { get; }
         protected ITestOutputHelper OutputHelper { get; }
@@ -18,7 +19,10 @@ namespace Eileen.Tests
 
         public virtual void Dispose()
         {
-            CurrentDbContext?.Database.EnsureDeleted();
+            if (!_keepTestDatabase)
+            {
+                CurrentDbContext?.Database.EnsureDeleted();
+            }
 
             CurrentDbContext?.Dispose();
             ServiceProvider?.Dispose();
@@ -49,6 +53,11 @@ namespace Eileen.Tests
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
             CurrentDbContext = ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        }
+
+        protected void KeepTestDatabase()
+        {
+            _keepTestDatabase = true;
         }
     }
 }
