@@ -49,6 +49,13 @@ namespace Eileen.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            //look for books with a null AuthorId
+            //if any, create an unknown-author
+            //(or look for an existing one)
+            //assign the unknown-author id to books
+            //with a null author
+            //do the same for publishers
+            
             migrationBuilder.DropForeignKey(
                 name: "FK_Books_Authors_AuthorId",
                 table: "Books");
