@@ -34,10 +34,10 @@ jobs:
     - name: Build solution and run all tests
       run: ./build.sh
 
-    - name: Login via Az module
-      uses: azure/login@v1
-      with:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
+#    - name: Login via Az module
+#      uses: azure/login@v1
+#      with:
+#        creds: ${{secrets.AZURE_CREDENTIALS}}
 
     - name: Apply db migrations
       run: |
