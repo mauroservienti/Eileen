@@ -1,0 +1,18 @@
+﻿@model Eileen.Data.Book
+
+@{
+    ViewBag.Title = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+
+<ul>
+    @if (@Model.Author != null)
+    {
+        <li>Autore: @Model.Author.Name</li>   
+    }
+    @if (@Model.Publisher != null)
+    {
+        <li>Editore: @Model.Publisher.Name</li>   
+    }
+</ul>
