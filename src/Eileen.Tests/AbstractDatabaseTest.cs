@@ -55,7 +55,7 @@ namespace Eileen.Tests
             CurrentDbContext = ServiceProvider.GetRequiredService<ApplicationDbContext>();
         }
 
-        protected void KeepTestDatabase()
+        protected void DoNotDeleteTestDatabase()
         {
             _keepTestDatabase = true;
         }

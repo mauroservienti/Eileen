@@ -47,6 +47,8 @@ namespace Eileen.Tests
 
             //Go back to previous
             await migrator.MigrateAsync("ChangeBooksReferentialActionToSetNull");
+            
+            DoNotDeleteTestDatabase();
         }
 
         [Fact]
