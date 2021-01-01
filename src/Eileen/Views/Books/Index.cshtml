@@ -1,0 +1,48 @@
+﻿@model Eileen.Data.PagedResults<Eileen.Data.Book>
+
+@{
+    ViewData["Title"] = "Libri";
+}
+
+<h2>Libri</h2>
+
+<ul>
+    @foreach (var book in Model.Results)
+    {
+        <li>
+            <a asp-controller="Book" asp-action="Index" asp-route-id="@book.Id">@book.Title
+                @if (@book.Author != null)
+                {
+                    <span> (@book.Author.Name)</span>   
+                }</a>
+        </li>
+    }
+</ul>
+
+<div>Pagina @Model.Page di @Model.PagesCount</div>
+<div>
+    @{
+        var showPrev = Model.Page > 1;
+        var showNext = Model.Page < Model.PagesCount;
+    }
+    @if (showPrev)
+    {
+        <span>
+            <a asp-controller="Book" asp-action="Index" asp-route-page="@(Model.Page - 1)">
+                &NestedLessLess; Pagina precedente
+            </a>
+        </span>
+    }
+    @if (showPrev && showNext)
+    {
+        <span> | </span>
+    }
+    @if (showNext)
+    {
+        <span>
+            <a asp-controller="Book" asp-action="Index" asp-route-page="@(Model.Page + 1)">
+                Pagina successiva &NestedGreaterGreater;
+            </a>
+        </span>
+    }
+</div>
