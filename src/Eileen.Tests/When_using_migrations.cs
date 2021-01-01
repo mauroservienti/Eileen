@@ -27,6 +27,7 @@ namespace Eileen.Tests
         }
 
         [Fact]
+        //repro for https://github.com/mauroservienti/Eileen/issues/52
         public async Task Add_CreatedOn_and_LastModifiedOn_correctly_even_with_existing_data()
         {
             var migrator = CurrentDbContext.GetInfrastructure().GetRequiredService<IMigrator>();
