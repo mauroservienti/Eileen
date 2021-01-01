@@ -49,10 +49,42 @@ namespace Eileen.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            //look for books with a null AuthorId
+            //if any, create an unknown-author
+            //(or look for an existing one)
+            //assign the unknown-author id to books
+            //with a null author
+            //do the same for publishers
+            var booksAuthorsFix = @"print 'going to fix books with null AuthorId'
+declare @unknownAuthorId int
+select @unknownAuthorId = [dbo].[Authors].[Id] from [dbo].[Authors] where [dbo].[Authors].[Name] = 'unknown-author'
+if @unknownAuthorId is null
+begin
+   print 'unknown-author not fund, creating it'
+   insert into [dbo].[Authors] ([Name]) values ('unknown-author')
+   select @unknownAuthorId = SCOPE_IDENTITY()
+end
+print concat('unknown-author ID: ', @unknownAuthorId)
+update [dbo].[Books] set [dbo].[Books].[AuthorId] = @unknownAuthorId where [dbo].[Books].[AuthorId] is null";
+
+            migrationBuilder.Sql(booksAuthorsFix);
             migrationBuilder.DropForeignKey(
                 name: "FK_Books_Authors_AuthorId",
                 table: "Books");
-
+            
+            var booksPublishersFix = @"print 'going to fix books with null PublisherId'
+declare @unknownPublisherId int
+select @unknownPublisherId = [dbo].[Publishers].[Id] from [dbo].[Publishers] where [dbo].[Publishers].[Name] = 'unknown-publisher'
+if @unknownPublisherId is null
+begin
+   print 'unknown-publisher not fund, creating it'
+   insert into [dbo].[Publishers] ([Name]) values ('unknown-publisher')
+   select @unknownPublisherId = SCOPE_IDENTITY()
+end
+print concat('unknown-publisher ID: ', @unknownPublisherId)
+update [dbo].[Books] set [dbo].[Books].[PublisherId] = @unknownPublisherId where [dbo].[Books].[PublisherId] is null";
+            
+            migrationBuilder.Sql(booksPublishersFix);
             migrationBuilder.DropForeignKey(
                 name: "FK_Books_Publishers_PublisherId",
                 table: "Books");
