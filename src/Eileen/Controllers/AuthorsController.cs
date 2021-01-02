@@ -202,5 +202,10 @@ namespace Eileen.Controllers
 
             return RedirectToAction("View", new {id = id});
         }
+
+        public IActionResult SelectForNewBook()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -35,5 +35,12 @@ namespace Eileen.Controllers
 
             return View(authors);
         }
+
+        [HttpGet("new")]
+        public async Task<IActionResult> New()
+        {
+            //list authors to select the book author
+            return RedirectToAction("SelectForNewBook", "Authors", new { action = "newbook" });
+        }
     }
 }
