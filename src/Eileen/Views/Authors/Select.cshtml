@@ -1,0 +1,21 @@
+﻿@model Eileen.Data.PagedResults<Eileen.Data.Author>
+
+@{
+    ViewBag.Title = "Seleziona l'autore...";
+}
+
+<h2>Seleziona l'autore</h2>
+
+<ul>
+    @foreach (var author in Model.Results)
+    {
+        <li>
+            @using(Html.BeginForm( "Select","Authors",routeValues: new { id = author.Id}, FormMethod.Post ))
+            {
+                @author.Name <button type="submit">Seleziona...</button>
+            }
+        </li>
+    }
+</ul>
+
+@await Component.InvokeAsync("Eileen.PagedResultsNavigation", @Model)
