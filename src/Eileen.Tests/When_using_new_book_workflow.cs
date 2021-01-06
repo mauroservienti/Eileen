@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Eileen.Controllers;
+using Eileen.Data;
 using Eileen.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,6 +37,72 @@ namespace Eileen.Tests
             Assert.False(viewModel.IsAuthorSelected);
             Assert.Null(viewModel.SelectedAuthorName);
             Assert.Null(viewModel.SelectedAuthorId);
+        }
+        
+        [Fact]
+        public async Task New_creates_expected_book_and_clears_cookies()
+        {
+            await CurrentDbContext.Database.MigrateAsync();
+
+            var expectedAuthor = new Author() {Name = "the author name"};
+            await CurrentDbContext.Authors.AddAsync(expectedAuthor);
+            await CurrentDbContext.SaveChangesAsync();
+            CurrentDbContext.ChangeTracker.Clear();
+            
+            var selectedAuthorIdCookieName = "selected-author-id";
+            var selectedAuthorNameCookieName = "selected-author-name";
+            
+            var expectedSelectedAuthorId = expectedAuthor.Id;
+            var expectedSelectedAuthorName = expectedAuthor.Name;
+            
+            var cookies = new CookieContainer();
+            cookies.AddCookie(selectedAuthorIdCookieName, expectedSelectedAuthorId.ToString());
+            cookies.AddCookie(selectedAuthorNameCookieName, UrlEncoder.Default.Encode(expectedSelectedAuthorName));
+            
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.SetCookies(cookies);
+
+            var controller = new BooksController(CurrentDbContext)
+            {
+                ControllerContext = new ControllerContext() {HttpContext = httpContext}
+            };
+
+            var newBookViewModel = new NewBookViewModel()
+            {
+                Title = "Book title",
+                IsAuthorSelected = true,
+                SelectedAuthorId = expectedSelectedAuthorId
+            };
+            
+            var viewResult = await controller.New(newBookViewModel) as RedirectToActionResult;
+            Assert.NotNull(viewResult);
+            Assert.Equal("Index", viewResult.ActionName);
+            Assert.Equal("Book", viewResult.ControllerName);
+            
+            var newBookId = viewResult.RouteValues["id"]?.ToString();
+            Assert.NotNull(newBookId);
+            
+            var id = int.Parse(newBookId);
+
+            var newBook = await CurrentDbContext.Books
+                .Include(b => b.Author)
+                .SingleOrDefaultAsync(b => b.Id == id);
+            
+            Assert.NotNull(newBook);
+            Assert.Equal(newBookViewModel.Title, newBook.Title);
+            Assert.Equal(expectedSelectedAuthorId, newBook.AuthorId);
+            Assert.Equal(expectedSelectedAuthorName, newBook.Author.Name);
+            
+            var rawSelectedAuthorIdCookie = httpContext.Response.GetRawCookie(selectedAuthorIdCookieName);
+            var rawSelectedAuthorNameCookie = httpContext.Response.GetRawCookie(selectedAuthorNameCookieName);
+
+            Assert.NotNull(rawSelectedAuthorIdCookie);
+            Assert.Equal(string.Empty, rawSelectedAuthorIdCookie[selectedAuthorIdCookieName]);
+            Assert.Equal(DateTime.UnixEpoch, DateTimeOffset.Parse(rawSelectedAuthorIdCookie["expires"]));
+            
+            Assert.NotNull(rawSelectedAuthorNameCookie);
+            Assert.Equal(string.Empty, rawSelectedAuthorNameCookie[selectedAuthorNameCookieName]);
+            Assert.Equal(DateTime.UnixEpoch, DateTimeOffset.Parse(rawSelectedAuthorNameCookie["expires"]));
         }
 
         [Fact]
