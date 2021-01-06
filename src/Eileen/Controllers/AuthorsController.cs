@@ -202,5 +202,44 @@ namespace Eileen.Controllers
 
             return RedirectToAction("View", new {id = id});
         }
+
+        [HttpGet("select")]
+        public async Task<IActionResult> Select(string q = null, int page = 1, int pageSize = 25)
+        {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+
+            if (pageSize <= 0)
+            {
+                pageSize = 25;
+            }
+
+            IQueryable<Author> authorsQuery = _dbContext.Authors;
+
+            if(!string.IsNullOrWhiteSpace(q))
+            {
+                authorsQuery = authorsQuery.Where(a => a.Name.Contains(q));
+            }
+
+            var authors = await authorsQuery.OrderBy(a => a.Name)
+                .ToPagedResultsAsync(page, pageSize);
+
+            return View(authors);
+        }
+
+        [HttpPost("select/{id}"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> Select(int id)
+        {
+            var author = await _dbContext.Authors.FindAsync(id);
+
+            //TODO handle author not found
+
+            Response.Cookies.Append("selected-author-id", author.Id.ToString());
+            Response.Cookies.Append("selected-author-name", author.Name);
+
+            return RedirectToAction("New", "Books");
+        }
     }
 }

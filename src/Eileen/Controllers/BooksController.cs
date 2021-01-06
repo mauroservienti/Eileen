@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Eileen.Data;
+using Eileen.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,6 +36,58 @@ namespace Eileen.Controllers
                 .ToPagedResultsAsync(page, pageSize);
 
             return View(authors);
+        }
+
+        [HttpGet("new")]
+        public IActionResult New()
+        {
+            var isAuthorSelected = Request.Cookies.ContainsKey("selected-author-id");
+
+            var viewModel = new NewBookViewModel()
+            {
+                IsAuthorSelected = isAuthorSelected,
+                SelectedAuthorId = isAuthorSelected ? int.Parse(Request.Cookies["selected-author-id"]) : null,
+                SelectedAuthorName = isAuthorSelected ? Request.Cookies["selected-author-name"] : null
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("ClearSelectedAuthor")]
+        public IActionResult ClearSelectedAuthor(NewBookViewModel model)
+        {
+            Response.Cookies.Delete("selected-author-id");
+            Response.Cookies.Delete("selected-author-name");
+
+            return RedirectToAction("New");
+        }
+
+        [HttpPost("new")]
+        public async Task<IActionResult> New(NewBookViewModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
+
+            var newBook = new Book
+            {
+                AuthorId = model.SelectedAuthorId,
+                Title = model.Title
+            };
+
+            await _dbContext.Books.AddAsync(newBook);
+            await _dbContext.SaveChangesAsync();
+
+            Response.Cookies.Delete("selected-author-id");
+            Response.Cookies.Delete("selected-author-name");
+
+            return RedirectToAction("Index", "Book", new { id = newBook.Id });
         }
     }
 }

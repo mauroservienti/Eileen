@@ -1,0 +1,29 @@
+﻿@model Eileen.Data.PagedResults
+
+<div>Pagina @Model.Page di @Model.PagesCount</div>
+<div>
+    @{
+        var showPrev = Model.Page > 1;
+        var showNext = Model.Page < Model.PagesCount;
+    }
+    @if (showPrev)
+    {
+        <span>
+            <a asp-action="Index" asp-route-page="@(Model.Page - 1)">
+                &NestedLessLess; Pagina precedente
+            </a>
+        </span>
+    }
+    @if (showPrev && showNext)
+    {
+        <span> | </span>
+    }
+    @if (showNext)
+    {
+        <span>
+            <a asp-action="Index" asp-route-page="@(Model.Page + 1)">
+                Pagina successiva &NestedGreaterGreater;
+            </a>
+        </span>
+    }
+</div>
