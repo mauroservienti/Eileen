@@ -46,8 +46,8 @@ namespace Eileen.Controllers
             var viewModel = new NewBookViewModel()
             {
                 IsAuthorSelected = isAuthorSelected,
-                SelectedAutorId = isAuthorSelected ? int.Parse(Request.Cookies["selected-author-id"]) : default,
-                SelectedAutorName = isAuthorSelected ? Request.Cookies["selected-author-name"] : null
+                SelectedAuthorId = isAuthorSelected ? int.Parse(Request.Cookies["selected-author-id"]) : null,
+                SelectedAuthorName = isAuthorSelected ? Request.Cookies["selected-author-name"] : null
             };
 
             return View(viewModel);
@@ -77,7 +77,7 @@ namespace Eileen.Controllers
 
             var newBook = new Book
             {
-                AuthorId = model.SelectedAutorId,
+                AuthorId = model.SelectedAuthorId,
                 Title = model.Title
             };
 
