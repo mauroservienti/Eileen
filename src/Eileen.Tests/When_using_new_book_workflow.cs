@@ -1,11 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Text.Encodings.Web;
 using Eileen.Controllers;
 using Eileen.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,22 +38,15 @@ namespace Eileen.Tests
         [Fact]
         public void Selected_author_is_presented_as_expected()
         {
-            var domain = "localhost";
             var expectedSelectedAuthorId = 3;
             var expectedSelectedAuthorName = "this is the author name";
 
             var cookies = new CookieContainer();
-            cookies.Add(new Cookie("selected-author-id", expectedSelectedAuthorId.ToString())
-            {
-                Domain = domain
-            });
-            cookies.Add(new Cookie("selected-author-name", UrlEncoder.Default.Encode(expectedSelectedAuthorName))
-            {
-                Domain = domain
-            });
+            cookies.AddCookie("selected-author-id", expectedSelectedAuthorId.ToString());
+            cookies.AddCookie("selected-author-name", UrlEncoder.Default.Encode(expectedSelectedAuthorName));
             
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers.Add(HeaderNames.Cookie, cookies.GetCookieHeader(new Uri("http://" + domain)));
+            httpContext.Request.SetCookies(cookies);
             
             var controller = new BooksController(CurrentDbContext)
             {
