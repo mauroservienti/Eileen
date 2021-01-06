@@ -18,7 +18,7 @@ namespace Eileen.Tests
         }
 
         [Fact]
-        public void New_create_expected_book_view_model()
+        public void New_returns_expected_book_view_model()
         {
             var httpContext = new DefaultHttpContext();
 
